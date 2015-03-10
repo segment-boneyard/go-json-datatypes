@@ -1,28 +1,22 @@
 package datatypes
 
-import "reflect"
-
-var typeMap map[string]string = map[string]string{
-	"bool": "Boolean",
-
-	"float64": "Number",
-	"int":     "Number",
-
-	"string": "String",
-
-	"[]interface{}": "Array",
-	"[]string":      "Array",
-
-	"map[string]interface {}": "Object",
-	"nil": "null",
-}
-
-func DataType(obj interface{}) string {
-	if obj == nil {
+func DataType(v interface{}) string {
+	if v == nil {
 		return "null"
 	}
 
-	t := reflect.TypeOf(obj).String()
-
-	return typeMap[t]
+	switch v.(type) {
+	case int, int8, int32, int64, uint, uint8, uint32, uint64, float32, float64:
+		return "Number"
+	case string:
+		return "String"
+	case bool:
+		return "Boolean"
+	case []interface{}, []string, []int, []int8, []int32, []int64, []uint, []uint8, []uint32, []uint64, []float32, []float64:
+		return "Array"
+	case map[interface{}]interface{}, map[string]interface{}:
+		return "Object"
+	default:
+		return "Value"
+	}
 }
