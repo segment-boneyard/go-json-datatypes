@@ -1,5 +1,7 @@
 package datatypes
 
+import "reflect"
+
 // FYI these are the types when you use json.Unmarshal
 //
 // bool, for JSON booleans
@@ -9,21 +11,32 @@ package datatypes
 // map[string]interface{}, for JSON objects
 // nil for JSON null
 
+var byteSliceType = reflect.TypeOf([]byte(nil))
+
 func DataType(v interface{}) string {
 	if v == nil {
 		return "null"
 	}
 
-	switch v.(type) {
-	case int, int8, int32, int64, uint, uint8, uint32, uint64, float32, float64:
+	valueOf := reflect.ValueOf(v)
+
+	switch valueOf.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return "number"
-	case string:
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return "number"
+	case reflect.Float32, reflect.Float64:
+		return "number"
+	case reflect.String:
 		return "string"
-	case bool:
+	case reflect.Bool:
 		return "boolean"
-	case []interface{}, []string, []int, []int8, []int32, []int64, []uint, []uint8, []uint32, []uint64, []float32, []float64:
+	case reflect.Array, reflect.Slice:
+		if valueOf.Type() == byteSliceType {
+			return "string"
+		}
 		return "array"
-	case map[interface{}]interface{}, map[string]interface{}:
+	case reflect.Map, reflect.Struct:
 		return "object"
 	default:
 		return "value"
